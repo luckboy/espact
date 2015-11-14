@@ -1,0 +1,110 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+# Copyright (c) 2015 Łukasz Szpakowski
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+from sys import argv, exit, stderr, stdout
+from getopt import getopt
+import yaml
+import espact    
+
+opts, args = getopt(argv[1:], "ilm:rD:d:" , [
+        "info",
+        "list",
+        "make=",
+        "rules",
+        "directory=",
+        "help"
+])
+
+package_collection_dir = "."
+command = "build"
+vars = {}
+
+for opt, opt_arg in opts:
+    if opt == "-i" or opt == "--info":
+        command = "info"
+    elif opt == "-l" or opt == "--list":
+        command = "list"
+    elif opt == "-m" or opt == "--make":
+        command = "make"
+    elif opt == "-r" or opt == "--rules":
+        command = "rules"
+    elif opt == "-D":
+        strings = opt_arg.split("=", 1)
+        if len(strings) == 2:
+            name, value = strings
+            defined_vars[name] = value
+        else:
+            stderr.write("error: incorrect argument\n")
+            exit(1)
+    elif opt == "-d" or opt == "--directory":
+        package_collection_dir = opt_arg
+    elif opt == "--help":
+        print("Usage: " + argv[0] + " [<command>] [<option> ...] [<package> ...]")
+        print("")
+        print("Commands:")
+        print("  -i, --info                    display information about packages")
+        print("  -l, --list                    display list of packages")
+        print("  -m, --make=[<target>,...]     make targets for packages (this command with")
+        print("                                build target is default)")
+        print("  -r, --rules                   display rules of packages")
+        print("")
+        print("Options:")
+        print("  -D <variable>=<value>         define variable")
+        print("  -d, --directory=<directory>   set directory of package collection")
+        print("      --help                    display this text")
+        exit(0)
+
+package_collection = espact.PackageCollection(dir = package_collection_dir, vars = vars)
+if args != []:
+    package_paths = args
+else:
+    package_paths = sorted(package_collection.get_package_paths())
+
+status = 0
+if command == "info":
+    for package_path in package_paths:
+        try:
+            package = package_collection.get_package(package_path)
+            stdout.write(yaml.dump({ package_path: package.info }, default_flow_style = False, default_style = ""))
+        except espact.EspactException as e:
+            stderr.write("error: " + str(e) + "\n")
+            status = 1
+elif command == "list":
+    for package_path in package_paths:
+        if package_collection.has_package(package_path):
+            stdout.write(yaml.dump([package_path], default_flow_style = False, default_style = ""))
+        else:
+            stderr.write("error: " + str(espact.NoPackageException(package_path)) + "\n")
+            status = 1
+elif command == "make":
+    stderr.write("error: unsupported command\n")
+    exit(1)
+elif command == "rules":
+    for package_path in package_paths:
+        try:
+            package = package_collection.get_package(package_path)
+            stdout.write(yaml.dump({ package_path: package.rules }, default_flow_style = False, default_style = ""))
+        except espact.EspactException as e:
+            stderr.write("error: " + str(e) + "\n")
+            status = 1
+
+exit(status)
