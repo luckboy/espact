@@ -20,33 +20,60 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from os.path import join
 from sys import argv, exit, stderr, stdout
-from getopt import getopt
+from getopt import GetoptError, getopt
 import yaml
 import espact    
 
-opts, args = getopt(argv[1:], "ilm:rD:d:" , [
-        "info",
-        "list",
-        "make=",
-        "rules",
-        "directory=",
-        "help"
-])
+try:
+    opts, args = getopt(argv[1:], "ilM:m:rTtu:D:d:fnw" , [
+            "info",
+            "list",
+            "targets-to-make=",
+            "make=",
+            "rules",
+            "made-targets",
+            "targets",
+            "unmake=",
+            "directory=",
+            "fake",
+            "help",
+            "no-make-targets",
+            "work-directory="
+    ])
+except GetoptError as e:
+    stderr.write("error: " + str(e) + "\n")
+    exit(1)
 
 package_collection_dir = "."
-command = "build"
+work_dir = None
+command = "make"
+target_names = ["build"]
 vars = {}
+is_fake = False
+can_add_made_target = True
 
 for opt, opt_arg in opts:
     if opt == "-i" or opt == "--info":
         command = "info"
     elif opt == "-l" or opt == "--list":
         command = "list"
+    elif opt == "-M" or opt == "--targets-to-make":
+        command = "targets_to_make"
+        target_names = opt_arg.split(",")
     elif opt == "-m" or opt == "--make":
         command = "make"
+        target_names = opt_arg.split(",")
     elif opt == "-r" or opt == "--rules":
         command = "rules"
+    elif opt == "-T" or opt == "--made-targets":
+        command = "made_targets"
+    elif opt == "-t" or opt == "--targets":
+        command = "targets"
+    elif opt == "-u" or opt == "--unmake":
+        command = "unmake"
+        target_names = opt_arg.split(",")
     elif opt == "-D":
         strings = opt_arg.split("=", 1)
         if len(strings) == 2:
@@ -57,27 +84,75 @@ for opt, opt_arg in opts:
             exit(1)
     elif opt == "-d" or opt == "--directory":
         package_collection_dir = opt_arg
+    elif opt == "-f" or opt == "--fake":
+        is_fake = True
     elif opt == "--help":
         print("Usage: " + argv[0] + " [<command>] [<option> ...] [<package> ...]")
         print("")
         print("Commands:")
         print("  -i, --info                    display information about packages")
         print("  -l, --list                    display list of packages")
+        print("  -M, --targets-to-make=[<target>,...] display targets which would be made by")
+        print("                                --make command with same targets")
         print("  -m, --make=[<target>,...]     make targets for packages (this command with")
         print("                                build target is default)")
         print("  -r, --rules                   display rules of packages")
+        print("  -T, --made-targets            display made targets of packages")
+        print("  -t, --targets                 display all targets of packages")
+        print("  -u, --unmake=[<target>,...]   set targets as unmade for packages")
         print("")
         print("Options:")
         print("  -D <variable>=<value>         define variable")
         print("  -d, --directory=<directory>   set directory of package collection")
+        print("  -f, --fake                    don't execute shell commands for targets")
         print("      --help                    display this text")
+        print("  -n, --no-make-targets         don't set targets as made after making of")
+        print("                                these targets")
+        print("  -w, --work-directory=<directory> set work directory (default work directory")
+        print("                                is in directory of package collection and has")
+        print("                                work name)")
         exit(0)
+    elif opt == "-n" or opt == "--no-make-targets":
+        can_add_made_target = False
+    elif opt == "-w" or opt == "--work-directory":
+        work_dir = opt_arg
 
-package_collection = espact.PackageCollection(dir = package_collection_dir, vars = vars)
+if work_dir == None:
+    work_dir = join(package_collection_dir, "work")
+
+package_collection = espact.PackageCollection(dir = package_collection_dir, work_dir = work_dir, vars = vars)
 if args != []:
     package_paths = args
 else:
     package_paths = sorted(package_collection.get_package_paths())
+
+def cycle_message(target1, target2):
+    return "cycle was detected between target " + str(target1) + " and target " + str(target2)
+
+def pre_make_for_make(target, is_made_target):
+    if not is_made_target:
+        print("*** Making target " + str(target) + " ...")
+    else:
+        print("*** Already made target " + str(target))
+
+def post_make_for_make(target, is_previously_made_target):
+    if not is_previously_made_target:
+        print("*** Made target " + str(target))
+
+def cycle_for_make(target1, target2):
+    stderr.write("*** Error: " + cycle_message(target1, target2) + "\n")
+    exit(1)
+
+def pre_make_for_targets_to_make(target, is_made_target):
+    pass
+
+def post_make_for_targets_to_make(target, is_prev_made_target):
+    if not is_prev_made_target:
+        stdout.write(yaml.dump([target], default_flow_style = False, default_style = ""))
+
+def cycle_for_targets_to_make(target1, target2):
+    stderr.write("error: " + cycle_message(target1, target2) + "\n")
+    exit(1)
 
 status = 0
 if command == "info":
@@ -95,9 +170,28 @@ elif command == "list":
         else:
             stderr.write("error: " + str(espact.NoPackageException(package_path)) + "\n")
             status = 1
+elif command == "targets_to_make":
+    maker = espact.Maker(package_collection, pre_make_for_targets_to_make, post_make_for_targets_to_make, cycle_for_targets_to_make, is_fake = True, can_add_made_target = can_add_made_target, can_create_made_target_file = False)
+    for package_path in package_paths:
+        for target_name in target_names:
+            try:
+                if target_name in package_collection.get_package(package_path).rules:
+                    target = espact.make_target(package_path, target_name)
+                    maker.make(target)
+            except espact.EspactException as e:
+                stderr.write("error: " + str(e) + "\n")
+                exit(1)
 elif command == "make":
-    stderr.write("error: unsupported command\n")
-    exit(1)
+    maker = espact.Maker(package_collection, pre_make_for_make, post_make_for_make, cycle_for_make, is_fake = is_fake, can_add_made_target = can_add_made_target)
+    for package_path in package_paths:
+        for target_name in target_names:
+            try:
+                if target_name in package_collection.get_package(package_path).rules:
+                    target = espact.make_target(package_path, target_name)
+                    maker.make(target)
+            except espact.EspactException as e:
+                stderr.write("error: " + str(e) + "\n")
+                exit(1)
 elif command == "rules":
     for package_path in package_paths:
         try:
@@ -106,5 +200,37 @@ elif command == "rules":
         except espact.EspactException as e:
             stderr.write("error: " + str(e) + "\n")
             status = 1
+elif command == "made_targets":
+    for package_path in package_paths:
+        try:
+            package = package_collection.get_package(package_path)
+            made_targets = []
+            for target_name in sorted(package.rules.keys()):
+                target = espact.make_target(package_path, target_name)
+                if package_collection.has_made_target(target):
+                    made_targets.append(target)
+            stdout.write(yaml.dump(made_targets, default_flow_style = False, default_style = ""))
+        except espact.EspactException as e:
+            stderr.write("error: " + str(e) + "\n")
+            status = 1
+elif command == "targets":
+    for package_path in package_paths:
+        try:
+            package = package_collection.get_package(package_path)
+            targets = sorted(map(lambda target_name: espact.make_target(package_path, target_name), package.rules.keys()))
+            stdout.write(yaml.dump(targets, default_flow_style = False, default_style = ""))
+        except espact.EspactException as e:
+            stderr.write("error: " + str(e) + "\n")
+            status = 1
+elif command == "unmake":
+    for package_path in package_paths:
+        for target_name in target_names:
+            if target_name in package_collection.get_package(package_path).rules:
+                target = espact.make_target(package_path, target_name)
+                try:
+                    package_collection.remove_made_target(target)
+                except espact.EspactException as e:
+                    stderr.write("error: " + str(e) + "\n")
+                    status = 1
 
 exit(status)

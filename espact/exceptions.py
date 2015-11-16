@@ -25,8 +25,23 @@ import yaml
 class EspactException(Exception):
     pass
 
+class TargetException(EspactException):
+    def __init__(self, target, message):
+        self.target = target
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+class NoRequiredTargetException(EspactException):
+    def __init__(self, target):
+        self.target = target
+
+    def __str__(self):
+        return "no required target " + str(self.target)
+
 class PackageException(EspactException):
-    def __init__(self, path = None, message = None):
+    def __init__(self, path, message):
         self.path = path
         self.message = message
 
@@ -40,7 +55,26 @@ class NoPackageException(EspactException):
     def __str__(self):
         return "no package " + self.path
 
-def exception_to_package_exception(exception, path = None):
+class CommandFailureException(EspactException):
+    def __init__(self, target, status = 1):
+        self.target = target
+        self.status = status
+
+    def __str__(self):
+        if self.status == 1:
+            return "command of rule " + str(self.target) + " failed"
+        else:
+            return "command of rule " + str(self.target) + " failed (status " + str(self.status) + ")"
+
+class CommandErrorException(EspactException):
+    def __init__(self, target, message):
+        self.target = target
+        self.message = message
+
+    def __str__(self):
+        return "error of command of rule " + str(self.target) + ": " + self.message
+
+def exception_to_package_exception(exception, path):
     if isinstance(exception, jinja2.TemplateNotFound):
         return PackageException(path, "no template " + name)
     elif isinstance(exception, jinja2.TemplateSyntaxError):
@@ -66,8 +100,7 @@ def exception_to_package_exception(exception, path = None):
             return PackageException(path, "template error")
     elif isinstance(exception, yaml.YAMLError):
         message = "YAML error: " 
-        message += str(exception.line) + "." + str(exception.column) + ": "
-        message += exception.message
+        message += str(exception.problem_mark.line + 1) + "." + str(exception.problem_mark.column + 1)
         return PackageException(path, message)
     elif isinstance(exception, IOError):
         return PackageException(path, "IO error: " + exception.message)
