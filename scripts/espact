@@ -27,7 +27,7 @@ import yaml
 import espact    
 
 try:
-    opts, args = getopt(argv[1:], "ilM:m:rTtu:D:d:fnw" , [
+    opts, args = getopt(argv[1:], "ilM:m:rTtu:D:d:fnw", [
             "info",
             "list",
             "targets-to-make=",
@@ -36,6 +36,7 @@ try:
             "made-targets",
             "targets",
             "unmake=",
+            "unmaking-targets",
             "directory=",
             "fake",
             "help",
@@ -74,6 +75,8 @@ for opt, opt_arg in opts:
     elif opt == "-u" or opt == "--unmake":
         command = "unmake"
         target_names = opt_arg.split(",")
+    elif opt == "--unmaking-targets":
+        command = "unmaking_targets"
     elif opt == "-D":
         strings = opt_arg.split("=", 1)
         if len(strings) == 2:
@@ -100,6 +103,8 @@ for opt, opt_arg in opts:
         print("  -T, --made-targets            display made targets of packages")
         print("  -t, --targets                 display all targets of packages")
         print("  -u, --unmake=[<target>,...]   set targets as unmade for packages")
+        print("      --unmaking-targets        display targets which aren't unmade but are to")
+        print("                                unmake after making of other targets")
         print("")
         print("Options:")
         print("  -D <variable>=<value>         define variable")
@@ -225,12 +230,25 @@ elif command == "targets":
 elif command == "unmake":
     for package_path in package_paths:
         for target_name in target_names:
-            if target_name in package_collection.get_package(package_path).rules:
-                target = espact.make_target(package_path, target_name)
-                try:
+            try:
+                if target_name in package_collection.get_package(package_path).rules:
+                    target = espact.make_target(package_path, target_name)
                     package_collection.remove_made_target(target)
-                except espact.EspactException as e:
-                    stderr.write("error: " + str(e) + "\n")
-                    status = 1
+            except espact.EspactException as e:
+                stderr.write("error: " + str(e) + "\n")
+                status = 1
+elif command == "unmaking_targets":
+    for package_path in package_paths:
+        try:
+            package = package_collection.get_package(package_path)
+            made_targets = []
+            for target_name in sorted(package.rules.keys()):
+                target = espact.make_target(package_path, target_name)
+                if package_collection.has_unmaking_target(target):
+                    made_targets.append(target)
+            stdout.write(yaml.dump(made_targets, default_flow_style = False, default_style = ""))
+        except espact.EspactException as e:
+            stderr.write("error: " + str(e) + "\n")
+            status = 1
 
 exit(status)

@@ -40,6 +40,13 @@ class NoRequiredTargetException(EspactException):
     def __str__(self):
         return "no required target " + str(self.target)
 
+class UnmakingTargetException(EspactException):
+    def __init__(self, target):
+        self.target = target
+
+    def __str__(self):
+        return "target " + str(self.target) + " isn't unmade"
+
 class PackageException(EspactException):
     def __init__(self, path, message):
         self.path = path

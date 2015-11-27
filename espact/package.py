@@ -23,12 +23,15 @@ from datetime import datetime
 from errno import EEXIST, ENOENT
 from os.path import dirname, isfile, join, realpath
 from os import makedirs, pipe, remove, sep, walk
+import platform
+import re
 import subprocess
 import jinja2
 import yaml
 from espact.exceptions import CommandErrorException, NoPackageException, PackageException, TargetException
 from espact.exceptions import exception_to_package_exception
 from espact.filters import default_filters
+from espact.functions import default_functions
 
 def _string_without_newline(string):
     if string != "":
@@ -114,7 +117,7 @@ class Rule:
     def __init__(self, data, default_package_path, default_target_name = "build"):
         if isinstance(data, dict):
             if "phony" in data:
-                self.phony = (str(data["phony"]) == "true")
+                self.phony = (data["phony"] == True or str(data["phony"]) == "true")
             else:
                 self.phony = False
             if "reqs" in data:
@@ -124,6 +127,13 @@ class Rule:
                     self.reqs = [Target(str(data["reqs"]), default_package_path, default_target_name)]
             else:
                  self.reqs = []
+            if "unmake" in data:
+                if isinstance(data["unmake"], list):
+                    self.unmake = map(lambda target_data: Target(target_data, default_package_path, default_target_name), data["unmake"])
+                else:
+                    self.unmake = (data["unmake"] == True or str(data["unmake"]) == "true")
+            else:
+                self.unmake = False
             if "cmd" in data:
                 self.cmd = str(data["cmd"])
             else:
@@ -131,13 +141,17 @@ class Rule:
         else:
             self.phony = False
             self.reqs = []
-            self.cmd = str(data)
+            self.unmake = False
+            if data !=  None:
+                self.cmd = str(data)
+            else:
+                self.cmd = ""
 
     def __str__(self):
         return _string_without_newline(yaml.dump(self, default_flow_style = False))
 
 def _rule_representer(dumper, value):
-    pairs = [("phony", value.phony), ("reqs", value.reqs), ("cmd", _RuleCommand(value.cmd))]
+    pairs = [("phony", value.phony), ("reqs", value.reqs), ("unmake", value.unmake), ("cmd", _RuleCommand(value.cmd))]
     return dumper.represent_mapping(u"tag:yaml.org,2002:map", pairs)
 
 yaml.add_representer(Rule, _rule_representer)
@@ -182,9 +196,14 @@ class PackageCollection:
             })
         self._env = jinja2.Environment(loader = loader)
         self._env.globals.update(vars)
+        self._env.globals["platform"] = platform
+        self._env.globals["re"] = re
+        self._env.globals["match"] = re.match
+        self._env.globals["sub"] = re.sub
         self._env.globals["package_collection_dir"] = self.dir
         self._env.globals["work_dir"] = self.work_dir
         self._env.globals["vars"] = vars
+        self._env.globals.update(default_functions)
         self._env.filters.update(default_filters)
         self._env.filters.update(filters)
         self._package_path_cache = None
@@ -276,9 +295,12 @@ class PackageCollection:
     def has_made_target(self, target):
         return self.get_made_target_time(target) != None
 
-    def add_made_target(self, target, can_create_file = True):
-        current_time = datetime.now()
-        self._made_target_time_cache[target] = current_time
+    def add_made_target(self, target, can_create_file = True, is_unmaking = False):
+        if not is_unmaking:
+            current_time = datetime.now()
+            self._made_target_time_cache[target] = current_time
+        else:
+            self._made_target_time_cache[target] = "unmaking"
         if can_create_file:
             target_file =  self.made_target_file(target)
             try:
@@ -292,7 +314,10 @@ class PackageCollection:
             try:
                 stream = open(target_file, "w")
                 try:
-                    stream.write(current_time.strftime("%Y-%m-%dT%H:%M:%S.%f") + "\n")
+                    if not is_unmaking:
+                        stream.write(current_time.strftime("%Y-%m-%dT%H:%M:%S.%f") + "\n")
+                    else:
+                        stream.write(self._made_target_time_cache[target] + "\n")
                 finally:
                     stream.close()
             except IOError as e:
@@ -326,7 +351,10 @@ class PackageCollection:
             stream = open(target_file, "r")
             try:
                 line = _string_without_newline(stream.readline())
-                time = datetime.strptime(line, "%Y-%m-%dT%H:%M:%S.%f")
+                if line != "unmaking":
+                    time = datetime.strptime(line, "%Y-%m-%dT%H:%M:%S.%f")
+                else:
+                    return "unmaking"
             finally:
                 stream.close()
             return time
@@ -341,15 +369,18 @@ class PackageCollection:
         except ValueError as e:
             raise TargetException(target, "incorrect date: " + str(e))
 
-    def clear_made_target_time(self):
-        self._made_target_time = {}
+    def clear_made_target_time_cache(self):
+        self._made_target_time_cache = {}
+
+    def has_unmaking_target(self, target):
+        return self.get_made_target_time(target) == "unmaking"
 
     def _load_yaml_template_file(self, file, *args, **kwargs):
         template = self._env.get_template(file)
         tmp_string = template.render(*args, **kwargs)
         return yaml.load(tmp_string)
 
-    def _load_yaml_template_string(self, file, *args, **kwargs):
-        template = self._jinja2_env.from_string(string)
+    def _load_yaml_template_string(self, string, *args, **kwargs):
+        template = self._env.from_string(string)
         tmp_string = template.render(*args, **kwargs)
         return yaml.load(tmp_string)

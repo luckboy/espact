@@ -102,3 +102,37 @@ def shsqe(string):
     return new_string
 
 default_filters["shsqe"] = shsqe
+
+def cme(string):
+    new_string = ""
+    for c in string:
+        if c == "\t":
+            new_string += "\\t"
+        elif c == "\n":
+            new_string += "\\n"
+        elif c == "\r":
+            new_string += "\\r"
+        elif c in " \"#$();@\\^":
+            new_string += "\\" + c
+        else:
+            new_string += c
+    return new_string
+
+default_filters["cme"] = cme
+
+def cmqe(string):
+    new_string = ""
+    for c in string:
+        if c == "\t":
+            new_string += "\\t"
+        elif c == "\n":
+            new_string += "\\n"
+        elif c == "\r":
+            new_string += "\\r"
+        elif c in "\"$()@\\^":
+            new_string += "\\" + c
+        else:
+            new_string += c
+    return new_string
+
+default_filters["cmqe"] = cmqe

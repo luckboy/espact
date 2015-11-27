@@ -24,7 +24,7 @@ from maker import *
 from package import *
 
 __all__ = [
-    "EspactException", "TargetException", "NoRequiredTargetException", "PackageException", "NoPackageException", "CommandFailureException", "CommandErrorException"
+    "EspactException", "TargetException", "NoRequiredTargetException", "UnmakingTargetException", "PackageException", "NoPackageException", "CommandFailureException", "CommandErrorException",
     "Maker",
     "Target", "make_target", "Rule", "Package", "PackageCollection", 
 ]
