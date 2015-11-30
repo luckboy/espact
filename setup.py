@@ -1,5 +1,11 @@
 #!/usr/bin/env python
-from distutils.core import setup
+# -*- coding: UTF-8 -*-
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+    from warnings import filterwarnings
+    filterwarnings("ignore", category = UserWarning, module = "distutils.dist")
 setup(
     name = "espact",
     description = "Easy tool for source package collections.",
@@ -8,4 +14,4 @@ setup(
     license = "MIT",
     packages = ["espact"],
     scripts = ["scripts/espact"],
-    install_requires=["jinja2", "yaml"])
+    install_requires = ["Jinja2", "PyYAML"])
