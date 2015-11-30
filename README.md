@@ -23,14 +23,14 @@ source package collection, you can build all packages by invoke the following co
 
     espact
 
-If you are other directory, you can pass the `-d` option with a directory of a source package
-collection to build all packages from other directory. If you want build single packages, you
-can invoke the following command:
+If you are in other directory, you can pass the `-d` option with a directory of a source
+package collection to build all packages from other directory. If you want build single
+packages, you can invoke the following command:
 
     espact [-d <directory of source package collection>] <package> ...
 
-This tool also can display list of packages of source package collection. You can invoke the
-following command to display all packages.
+This tool also can display a list of packages of a source package collection. You can invoke
+the following command to display all packages.
 
     espact [-d <directory of source package collection>] -l
 
@@ -50,7 +50,7 @@ with their rules. Files of package information have the `.info.yml` extension an
 `.rules.yml` extension is had files of package rules.
 
 The second directory contains a directory tree with template files for a package information
-and package rules. This directory should have the `default.rules.yml` file that have default
+and package rules. This directory should have the `default.rules.yml` file that has default
 rules.
 
 For example, a directory structure of a source package collection is:
@@ -82,7 +82,7 @@ features of Jinja2 templates in these files.
 
 ### Package rules
 
-Espact executes rules in files of package rules like the make program. A rule have a target and
+Espact executes rules in files of package rules like the make program. A rule has a target and
 can have required targets to make the target and shell commands. By default, Espact begins
 processing of rules from rule with the `build` target for each building package.
 
@@ -114,7 +114,7 @@ For example, the content of this file can be:
       phony: true
       unmake: true
       cmd: |
-        rm -fr 'packages/package'
+        rm -fr 'build/package'
 
 The rule associative array can have the following keys with values:
 
@@ -126,12 +126,12 @@ The rule associative array can have the following keys with values:
 
 A target in an YAML list can be represented by a list. The first element of this list is a
 package path and the second element of this list is the target name. If the list has one
-element, the target name is `build`. The target can be presented by a text if rule of this
+element, the target name is `build`. The target can be presented by a text if the rule of this
 target and a rule with this list are in same package. This text is name of this target.
 
 Shell commands are executed in the work directory. All results of execution of rules should be
 in this directory. This directory will contain the `targets` with files of made targets after
-execution of rules.
+making of targets.
 
 Also, files of package rules are Jinja2 template of YAML file. In other words, you also can use
 features of Jinja2 in these files.
@@ -139,13 +139,14 @@ features of Jinja2 in these files.
 ### Templates
 
 Files of package information and files of package rules are Jinja2 templates which can be
-rendered by the Jinja2 renderer. These templates can inherit from templates in two directories:
+rendered by the Jinja2 renderer. These templates can inherit from templates in two following
+directories:
 
 * `packages` - directory of packages
 * `templates` - directory of templates
 
 Espact provides the additional global variables which are available from Jinja2 templates
-and additional filters for these templates. These global variables are presented in the
+and the additional filters for these templates. These global variables are presented in the
 following list:
 
 * `platform` - `platform` module
@@ -190,8 +191,8 @@ presented in the following list:
 * `gnu_make(args, env, **other_fun_args)` - GNU make program
 * `bsd_make(args, env, **other_fun_args)` - BSD make program
 
-The `args` argument is a list of arguments. The `env` argument is a dictionary of environment
-variables. These functions also can take the following arguments:
+The `args` argument is a list of command arguments. The `env` argument is a dictionary of
+environment variables. These functions also can take the following arguments:
 
 * Arguments for all functions:
     * `indent` - indentation width (by default, indentation width is 4)
