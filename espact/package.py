@@ -197,11 +197,12 @@ class PackageCollection:
         self._env = jinja2.Environment(loader = loader)
         self._env.globals.update(vars)
         self._env.globals["platform"] = platform
+        self._env.globals["uname"] = platform.uname
         self._env.globals["re"] = re
         self._env.globals["match"] = re.match
         self._env.globals["sub"] = re.sub
-        self._env.globals["package_collection_dir"] = self.dir
-        self._env.globals["work_dir"] = self.work_dir
+        self._env.globals["package_collection_dir"] = self.dir.replace(sep, "/")
+        self._env.globals["work_dir"] = self.work_dir.replace(sep, "/")
         self._env.globals["vars"] = vars
         self._env.globals.update(default_functions)
         self._env.filters.update(default_filters)

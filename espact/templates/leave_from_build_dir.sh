@@ -22,9 +22,9 @@
 {
     case "$espact_config_type" in
     autoconf)
-        {{end_configure_for_autoconf()}};;
+        {{leave_from_build_dir_for_autoconf()}};;
     cmake)
-        {{end_configure_for_cmake()}};;
+        {{leave_from_build_dir_for_cmake()}};;
     *)
         true;;
     esac

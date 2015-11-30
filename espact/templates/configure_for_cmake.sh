@@ -24,16 +24,19 @@
 {%- if not cmake_prog -%}
 {%- set cmake_prog = "cmake" -%}
 {%- endif -%}
+{%- if not build_dir -%}
+{%- set build_dir = "build" -%}
+{%- endif -%}
 {%- if not tmp_dir -%}
 {%- set tmp_dir = "../tmp" -%}
 {%- endif -%}
 {%- if not find_root_dir and toolchain_dir -%}
 {%- set find_root_dir = toolchain_dir -%}
 {%- endif -%}
+espact_saved_cwd="`pwd`" && \
 {% if host -%}
-espact_saved_cwd="`pwd`"
 (
-{%- if not find_root_dir -%}
+{%- if not find_root_dir %}
     cc_path="`which '{{cc|shsqe}} '`"
     bin_path="`dirname "$cc_path"`"
     find_root_path="`dirname "$bin_path"`"
@@ -102,9 +105,10 @@ espact_saved_cwd="`pwd`"
     echo 'set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
 ) && \
 {% endif -%}
-mkdir -p build && \
+mkdir -p '{{build_dir|shsqe}}' && \
+cd '{{build_dir|shsqe}}' && \
 {%- for name in env %}
-{{name}}='{{env[name]|shqe}}' \
+{{name}}='{{env[name]|shsqe}}' \
 {%- endfor %}
 '{{cmake_prog|shsqe}}'
 {%- if host -%}

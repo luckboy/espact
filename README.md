@@ -108,7 +108,7 @@ For example, the content of this file can be:
         {{configure()}} && \
         {{make(["all"])}} && \
         {{make(["install", "DESTDIR=" + work_dir + "/dist"])}} && \
-        {{end_configure()}}
+        {{leave_from_build_dir()}}
 
     clean:
       phony: true
@@ -149,6 +149,7 @@ and additional filters for these templates. These global variables are presented
 following list:
 
 * `platform` - `platform` module
+* `uname` - `uname` function from `platform` module
 * `re` - `re` module
 * `match` - `match` function from `re` module
 * `sub` - `sub` function from `re` module
@@ -176,11 +177,15 @@ Also, Espact provides the functions which can be used in Jinja2 templates. These
 presented in the following list:
 
 * `configure(env, **other_fun_args)` - universal package configuration
-* `end_configure(**fun_args)` - universal leaving from building directory
+* `enter_to_build_dir(**fun_args)` - universal entering to building directory
+* `leave_from_build_dir(**fun_args)` - universal leaving from building directory
 * `configure_for_autoconf(args, env, **other_fun_args)` - package configuration for Autoconf
-* `end_configure_for_autoconf(**fun_args)` - leaving from building directory for Autoconf
+* `enter_to_build_dir_for_autoconf(**fun_args)` - entering to building directory for Autoconf
+* `leave_from_build_dir_for_autoconf(**fun_args)` - leaving from building directory for
+  Autoconf
 * `configure_for_cmake(args, env, **other_fun_args)` - package configuration for CMake
-* `end_configure_for_cmake(**fun_args)` - leaving from building directory for CMake
+* `enter_to_build_dir_for_cmake(**fun_args)` - entering to building directory for CMake
+* `leave_from_build_dir_for_cmake(**fun_args)` - leaving from building directory for CMake
 * `make(args, env, **other_fun_args)` - make program 
 * `gnu_make(args, env, **other_fun_args)` - GNU make program
 * `bsd_make(args, env, **other_fun_args)` - BSD make program
@@ -189,11 +194,11 @@ The `args` argument is a list of arguments. The `env` argument is a dictionary o
 variables. These functions also can take the following arguments:
 
 * Arguments for all functions:
-    * `indent` - indentation width (default by, indentation width is 4)
-    * `indentfirst` - indents lines with first line if this argument is true (default by, first
+    * `indent` - indentation width (by default, indentation width is 4)
+    * `indentfirst` - indents lines with first line if this argument is true (by default, first
        line isn't indented)
 * Arguments for configuration functions:
-    * `prefix` - installation prefix (default by, installation prefix is `/usr`)
+    * `prefix` - installation prefix (by default, installation prefix is `/usr`)
     * `build` - build machine (only for `configure_for_autoconf`)
     * `host` - host machine
     * `target` - target machine (only for `configure_for_autoconf`)
@@ -220,6 +225,8 @@ variables. These functions also can take the following arguments:
     * `build_cc` - C compiler for build machine (only for `configure_for_autoconf`)
     * `autoconf_prog` - autoconf program (only for `configure_for_autoconf`)
     * `cmake_prog` - cmake program (only for `configure_for_cmake`)
+* Argument for `configure_for_cmake` function and `enter_to_build_dir_for_cmake` function:
+    * `build_dir` - building directory (by default, building directory is `build`)
 * Argument for `make` function:
     * `make_prog` - make program
 
