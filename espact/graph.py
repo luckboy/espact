@@ -21,6 +21,8 @@
 
 class Graph:
     def dfs(self, vertex_key, preorder_fun, postorder_fun, cycle_fun, marked_vertex_keys = set([])):
+        if vertex_key in marked_vertex_keys:
+            return None
         stack = []
         unpopped_vertex_keys = set([])
         stack.append((vertex_key, 0))
