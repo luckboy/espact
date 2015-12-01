@@ -81,6 +81,14 @@ class CommandErrorException(EspactException):
     def __str__(self):
         return "error of command of rule " + str(self.target) + ": " + self.message
 
+class TemplateException(EspactException):
+    def __init__(self, file, traceback_lines):
+        self.file = file
+        self.traceback_lines = traceback_lines
+
+    def __str__(self):
+        return "exception from template " + self.file + ":\n" + ("".join(map(lambda line: "  " + line, self.traceback_lines)))
+
 def exception_to_package_exception(exception, path):
     if isinstance(exception, jinja2.TemplateNotFound):
         return PackageException(path, "no template " + name)
@@ -93,7 +101,7 @@ def exception_to_package_exception(exception, path):
         message += str(exception.lineno) + ": "
         message += exception.message
         return PackageException(path, message)
-    elif isinstance(exception, jinja2.TemplateSyntaxError):
+    elif isinstance(exception, jinja2.TemplateAssertionError):
         message = "template assertion error: "
         if exception.filename != None:
             message += exception.filename + ": "
@@ -111,5 +119,7 @@ def exception_to_package_exception(exception, path):
         return PackageException(path, message)
     elif isinstance(exception, IOError):
         return PackageException(path, "IO error: " + exception.message)
+    elif isinstance(exception, TemplateExcpetion):
+        return PackageException(path, str(exception))
     else:
         return PackageException(path, "unknown error")

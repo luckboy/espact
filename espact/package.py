@@ -26,10 +26,12 @@ from os import makedirs, pipe, remove, sep, walk
 import platform
 import re
 import subprocess
+import sys
+import traceback
 import jinja2
 import yaml
 from espact.exceptions import CommandErrorException, NoPackageException, PackageException, TargetException
-from espact.exceptions import exception_to_package_exception
+from espact.exceptions import TemplateException, exception_to_package_exception
 from espact.filters import default_filters
 from espact.functions import default_functions
 
@@ -378,10 +380,24 @@ class PackageCollection:
 
     def _load_yaml_template_file(self, file, *args, **kwargs):
         template = self._env.get_template(file)
-        tmp_string = template.render(*args, **kwargs)
+        try:
+            tmp_string = template.render(*args, **kwargs)
+        except:
+            e_type, e, tb = sys.exc_info()
+            raise self._exception_info_to_exception(file, e_type, e, tb)
         return yaml.load(tmp_string)
 
     def _load_yaml_template_string(self, string, *args, **kwargs):
         template = self._env.from_string(string)
-        tmp_string = template.render(*args, **kwargs)
+        try:
+            tmp_string = template.render(*args, **kwargs)
+        except:
+            e_type, e, tb = sys.exc_info()
+            raise self._exception_info_to_exception("<string>", e_type, e, tb)
         return yaml.load(tmp_string)
+
+    def _exception_info_to_exception(self, file, e_type, e, tb):
+        if not isinstance(e, jinja2.TemplateError):
+            return TemplateException(file, traceback.format_exception(e_type, e, tb))
+        else:
+            return e
