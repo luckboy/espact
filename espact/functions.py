@@ -23,6 +23,7 @@ import platform
 import re
 import jinja2
 from espact.filters import default_filters, shsqe
+from espact.variables import default_variables
 
 default_functions = {}
 
@@ -39,12 +40,8 @@ def _indent(string, width, indentfirst):
 
 def _render_template(file, *args, **kwargs):
     env = jinja2.Environment(loader = jinja2.PackageLoader("espact", "templates"))
+    env.globals.update(default_variables)
     env.globals.update(default_functions)
-    env.globals["platform"] = platform
-    env.globals["uname"] = platform.uname
-    env.globals["re"] = re
-    env.globals["match"] = re.match
-    env.globals["sub"] = re.sub
     env.filters.update(default_filters)
     template = env.get_template(file)
     new_kwargs = {}
@@ -54,6 +51,13 @@ def _render_template(file, *args, **kwargs):
     new_kwargs2.update(new_kwargs)
     new_kwargs2["fun_args"] = new_kwargs
     return _indent(template.render(*args, **new_kwargs2), kwargs.get("indent", 4), kwargs.get("indentfirst", False))
+
+def _enter_to_build_dir_for_default_build_dir(default_build_dir, **fun_args):
+    build_dir = fun_args.get("build_dir", default_build_dir)
+    string = "espact_saved_cwd=\"`pwd`\" && \\\n"
+    string += "mkdir -p '" + shsqe(build_dir) + "' && \\\n"
+    string += "cd '" + shsqe(build_dir) + "'"
+    return _indent(string, fun_args.get("indent", 4), fun_args.get("indentfirst", False))
 
 def configure(env = {}, **other_fun_args):
     return _render_template("configure.sh", env = env, **other_fun_args)
@@ -66,7 +70,7 @@ def enter_to_build_dir(**fun_args):
 default_functions["enter_to_build_dir"] = enter_to_build_dir
 
 def leave_from_build_dir(**fun_args):
-    return _render_template("leave_from_build_dir.sh", **fun_args)
+    return _indent("cd \"$espact_saved_cwd\"", fun_args.get("indent", 4), fun_args.get("indentfirst", False))
 
 default_functions["leave_from_build_dir"] = leave_from_build_dir
 
@@ -76,12 +80,12 @@ def configure_for_autoconf(args = [], env = {}, **other_fun_args):
 default_functions["configure_for_autoconf"] = configure_for_autoconf
 
 def enter_to_build_dir_for_autoconf(**fun_args):
-    return _indent("true", fun_args.get("indent", 4), fun_args.get("indentfirst", False))
+    return _enter_to_build_dir_for_default_build_dir(".", **fun_args)
 
 default_functions["enter_to_build_dir_for_autoconf"] = enter_to_build_dir_for_autoconf
 
 def leave_from_build_dir_for_autoconf(**fun_args):
-    return _indent("true", fun_args.get("indent", 4), fun_args.get("indentfirst", False))
+    return leave_from_build_dir(**fun_args)
 
 default_functions["leave_from_build_dir_for_autoconf"] = leave_from_build_dir_for_autoconf
 
@@ -91,15 +95,12 @@ def configure_for_cmake(args = [], env = {}, **other_fun_args):
 default_functions["configure_for_cmake"] = configure_for_cmake
 
 def enter_to_build_dir_for_cmake(**fun_args):
-    string = "espact_saved_cwd=\"`pwd`\" && \\\n"
-    string += "mkdir -p '" + shsqe(fun_args.get("build_dir", "build")) + "' && \\\n"
-    string += "cd '" + shsqe(fun_args.get("build_dir", "build")) + "'"
-    return _indent(string, fun_args.get("indent", 4), fun_args.get("indentfirst", False))
+    return _enter_to_build_dir_for_default_build_dir("build", **fun_args)
 
 default_functions["enter_to_build_dir_for_cmake"] = enter_to_build_dir_for_cmake
 
 def leave_from_build_dir_for_cmake(**fun_args):
-    return _indent("cd \"$espact_saved_cwd\"", fun_args.get("indent", 4), fun_args.get("indentfirst", False))
+    return leave_from_build_dir(**fun_args)    
 
 default_functions["leave_from_build_dir_for_cmake"] = leave_from_build_dir_for_cmake
 

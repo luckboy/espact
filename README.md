@@ -149,6 +149,11 @@ Espact provides the additional global variables which are available from Jinja2 
 and the additional filters for these templates. These global variables are presented in the
 following list:
 
+* `path` - `posixpath` module
+* `abspath` - `asbpath` function from `posixpath` module
+* `basename` - `basename` function from `posixpath` module
+* `dirname` - `dirname` function from `posixpath` module
+* `realpath` - `realpath` function from `posixpath` module
 * `platform` - `platform` module
 * `uname` - `uname` function from `platform` module
 * `re` - `re` module
@@ -203,6 +208,7 @@ environment variables. These functions also can take the following arguments:
     * `build` - build machine (only for `configure_for_autoconf`)
     * `host` - host machine
     * `target` - target machine (only for `configure_for_autoconf`)
+    * `build_dir` - building directory
     * `toolchain_dir` - toolchain directory
     * `find_root_dir` - search directory (only for `configure_for_cmake`)
     * `ar` - ar program
@@ -226,8 +232,6 @@ environment variables. These functions also can take the following arguments:
     * `build_cc` - C compiler for build machine (only for `configure_for_autoconf`)
     * `autoconf_prog` - autoconf program (only for `configure_for_autoconf`)
     * `cmake_prog` - cmake program (only for `configure_for_cmake`)
-* Argument for `configure_for_cmake` function and `enter_to_build_dir_for_cmake` function:
-    * `build_dir` - building directory (by default, building directory is `build`)
 * Argument for `make` function:
     * `make_prog` - make program
 

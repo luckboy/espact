@@ -28,7 +28,8 @@
         {{enter_to_build_dir_for_cmake(**fun_args)|indent(8)}}
     else
         espact_config_type=unknown
-        echo "Can't enter to building directory from $PWD" >&2
+        espact_saved_cwd="`pwd`"
+        echo "Can't find configuration script in directory $PWD" >&2
         false
     fi
     fi

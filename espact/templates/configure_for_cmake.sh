@@ -33,7 +33,6 @@
 {%- if not find_root_dir and toolchain_dir -%}
 {%- set find_root_dir = toolchain_dir -%}
 {%- endif -%}
-espact_saved_cwd="`pwd`" && \
 {% if host -%}
 (
 {%- if not find_root_dir %}
@@ -160,5 +159,5 @@ cd '{{build_dir|shsqe}}' && \
 {%- for arg in args %} \
     '{{arg|shsqe}}'
 {%- endfor %} \
-    ..
+    "$espact_saved_cwd"
 {%- endblock -%}

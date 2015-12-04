@@ -57,4 +57,5 @@
 {%- if not build_cc -%}
 {%- set build_cc = "gcc" -%}
 {%- endif -%}
-{%- block configure -%}{%- endblock -%}
+espact_saved_cwd="`pwd`" && \
+{% block configure -%}{%- endblock -%}

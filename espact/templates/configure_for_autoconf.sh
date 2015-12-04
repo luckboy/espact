@@ -24,7 +24,12 @@
 {%- if not autoreconf_prog -%}
 {%- set autoreconf_prog = "autoreconf" -%}
 {%- endif -%}
+{%- if not build_dir -%}
+{%- set build_dir = "." -%}
+{%- endif -%}
 ([ -x ./configure ] || '{{autoreconf_prog|shsqe}}' -i) && \
+mkdir -p '{{build_dir|shsqe}}' && \
+cd '{{build_dir|shsqe}}' && \
 {% if ar -%}
 AR='{{ar|shsqe}}' \
 {% endif -%}
@@ -91,7 +96,7 @@ PKG_CONFIG_LIBDIR='{{pkg_config_libdir|shsqe}}' \
 {% for name in env -%}
 {{name}}='{{env[name]|shsqe}}' \
 {% endfor -%}
-./configure
+"$espact_saved_cwd/configure"
 {%- if prefix %} \
     --prefix='{{prefix|shsqe}}'
 {%- endif -%}
