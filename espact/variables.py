@@ -25,10 +25,8 @@ import re
 
 default_variables = {
     "path": posixpath,
-    "abspath": posixpath.abspath,
     "basename": posixpath.basename,
     "dirname": posixpath.dirname,
-    "realpath": posixpath.realpath,
 
     "platform": platform,
     "uname": platform.uname,

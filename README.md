@@ -150,10 +150,8 @@ and the additional filters for these templates. These global variables are prese
 following list:
 
 * `path` - `posixpath` module
-* `abspath` - `asbpath` function from `posixpath` module
 * `basename` - `basename` function from `posixpath` module
 * `dirname` - `dirname` function from `posixpath` module
-* `realpath` - `realpath` function from `posixpath` module
 * `platform` - `platform` module
 * `uname` - `uname` function from `platform` module
 * `re` - `re` module
