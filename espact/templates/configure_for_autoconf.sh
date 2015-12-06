@@ -21,99 +21,105 @@
 -#}
 {%- extends "configure_base.sh" -%}
 {%- block configure -%}
-{%- if not autoreconf_prog -%}
-{%- set autoreconf_prog = "autoreconf" -%}
-{%- endif -%}
-{%- if not build_dir -%}
-{%- set build_dir = "." -%}
-{%- endif -%}
-([ -x ./configure ] || '{{autoreconf_prog|shsqe}}' -i) && \
-mkdir -p '{{build_dir|shsqe}}' && \
-cd '{{build_dir|shsqe}}' && \
-{% if ar -%}
-AR='{{ar|shsqe}}' \
-{% endif -%}
-{% if arflags -%}
-ARFLAGS='{{arflags|shsqe}}' \
-{% endif -%}
-{% if ranlib -%}
-RANLIB='{{ranlib|shsqe}}' \
-{% endif -%}
-{% if ranlibflags -%}
-RANLIBFLAGS='{{ranlibflags|shsqe}}' \
-{% endif -%}
-{% if yacc -%}
-YACC='{{yacc|shsqe}}' \
-{% endif -%}
-{% if yflags -%}
-YFLAGS='{{yflags|shsqe}}' \
-{% endif -%}
-{% if lex -%}
-LEX='{{lex|shsqe}}' \
-{% endif -%}
-{% if lflags -%}
-LFLAGS='{{lflags|shsqe}}' \
-{% endif -%}
-{% if cpp -%}
-CPP='{{cpp|shsqe}}' \
-{% endif -%}
-{% if cppflags -%}
-CPPFLAGS='{{cppflags|shsqe}}' \
-{% endif -%}
-{% if cc -%}
-CC='{{cc|shsqe}}' \
-{% endif -%}
-{% if cflags -%}
-CFLAGS='{{cflags|shsqe}}' \
-{% endif -%}
-{% if ldflags -%}
-LDFLAGS='{{ldflags|shsqe}}' \
-{% endif -%}
-{% if libs -%}
-LIBS='{{libs|shsqe}}' \
-{% endif -%}
-{% if cxx -%}
-CXX='{{cxx|shsqe}}' \
-{% endif -%}
-{% if cxxflags -%}
-CXXFLAGS='{{cxxflags|shsqe}}' \
-{% endif -%}
-{% if fc -%}
-FC='{{fc|shsqe}}' \
-{% endif -%}
-{% if fflags -%}
-FFLAGS='{{fflags|shsqe}}' \
-{% endif -%}
-{% if pkg_config -%}
-PKG_CONFIG='{{pkg_config|shsqe}}' \
-{% endif -%}
-{% if pkg_config_path -%}
-PKG_CONFIG_PATH='{{pkg_config_path|shsqe}}' \
-{% endif -%}
-{% if pkg_config_libdir -%}
-PKG_CONFIG_LIBDIR='{{pkg_config_libdir|shsqe}}' \
-{% endif -%}
-{% for name in env -%}
-{{name}}='{{env[name]|shsqe}}' \
-{% endfor -%}
-"$espact_saved_cwd/configure"
-{%- if prefix %} \
-    --prefix='{{prefix|shsqe}}'
-{%- endif -%}
-{%- if build %} \
-    --build='{{build|shsqe}}'
-{%- elif host or target %} \
-    --build="`'{{build_cc|shsqe}}' -dumpmachine`"
-{%- endif -%}
-{%- if host %} \
-    --host='{{host|shsqe}}'
-{%- elif build or target %} \
-    --host="`'{{build_cc|shsqe}}' -dumpmachine`"
-{%- endif -%}
-{%- if target %} \
-    --target='{{target|shsqe}}'
-{%- endif -%}
-{%- for arg in args %} \
-    '{{arg|shsqe}}'
-{%- endfor -%}
+    {%- if not autoreconf_prog -%}
+    {%- set autoreconf_prog = "autoreconf" -%}
+    {%- endif -%}
+    {%- if not build_dir -%}
+    {%- set build_dir = "." -%}
+    {%- endif -%}
+    ([ -x ./configure ] || '{{autoreconf_prog|shsqe}}' -i) && \
+    {% if build_dir != "." -%}
+    mkdir -p '{{build_dir|shsqe}}' && \
+    cd '{{build_dir|shsqe}}' && \
+    {% endif -%}
+    {% if ar -%}
+    AR='{{ar|shsqe}}' \
+    {% endif -%}
+    {% if arflags -%}
+    ARFLAGS='{{arflags|shsqe}}' \
+    {% endif -%}
+    {% if ranlib -%}
+    RANLIB='{{ranlib|shsqe}}' \
+    {% endif -%}
+    {% if ranlibflags -%}
+    RANLIBFLAGS='{{ranlibflags|shsqe}}' \
+    {% endif -%}
+    {% if yacc -%}
+    YACC='{{yacc|shsqe}}' \
+    {% endif -%}
+    {% if yflags -%}
+    YFLAGS='{{yflags|shsqe}}' \
+    {% endif -%}
+    {% if lex -%}
+    LEX='{{lex|shsqe}}' \
+    {% endif -%}
+    {% if lflags -%}
+    LFLAGS='{{lflags|shsqe}}' \
+    {% endif -%}
+    {% if cpp -%}
+    CPP='{{cpp|shsqe}}' \
+    {% endif -%}
+    {% if cppflags -%}
+    CPPFLAGS='{{cppflags|shsqe}}' \
+    {% endif -%}
+    {% if cc -%}
+    CC='{{cc|shsqe}}' \
+    {% endif -%}
+    {% if cflags -%}
+    CFLAGS='{{cflags|shsqe}}' \
+    {% endif -%}
+    {% if ldflags -%}
+    LDFLAGS='{{ldflags|shsqe}}' \
+    {% endif -%}
+    {% if libs -%}
+    LIBS='{{libs|shsqe}}' \
+    {% endif -%}
+    {% if cxx -%}
+    CXX='{{cxx|shsqe}}' \
+    {% endif -%}
+    {% if cxxflags -%}
+    CXXFLAGS='{{cxxflags|shsqe}}' \
+    {% endif -%}
+    {% if fc -%}
+    FC='{{fc|shsqe}}' \
+    {% endif -%}
+    {% if fflags -%}
+    FFLAGS='{{fflags|shsqe}}' \
+    {% endif -%}
+    {% if pkg_config -%}
+    PKG_CONFIG='{{pkg_config|shsqe}}' \
+    {% endif -%}
+    {% if pkg_config_path -%}
+    PKG_CONFIG_PATH='{{pkg_config_path|shsqe}}' \
+    {% endif -%}
+    {% if pkg_config_libdir -%}
+    PKG_CONFIG_LIBDIR='{{pkg_config_libdir|shsqe}}' \
+    {% endif -%}
+    {% for name in env -%}
+    {{name}}='{{env[name]|shsqe}}' \
+    {% endfor -%}
+    {% if build_dir != "." -%}
+    "$espact_saved_cwd/configure"
+    {%- else -%}
+    ./configure
+    {%- endif -%}
+    {%- if prefix %} \
+        --prefix='{{prefix|shsqe}}'
+    {%- endif -%}
+    {%- if build %} \
+        --build='{{build|shsqe}}'
+    {%- elif host or target %} \
+        --build="`'{{build_cc|shsqe}}' -dumpmachine`"
+    {%- endif -%}
+    {%- if host %} \
+        --host='{{host|shsqe}}'
+    {%- elif build or target %} \
+        --host="`'{{build_cc|shsqe}}' -dumpmachine`"
+    {%- endif -%}
+    {%- if target %} \
+        --target='{{target|shsqe}}'
+    {%- endif -%}
+    {%- for arg in args %} \
+        '{{arg|shsqe}}'
+    {%- endfor -%}
 {%- endblock -%}
