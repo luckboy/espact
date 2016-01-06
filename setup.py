@@ -14,4 +14,5 @@ setup(
     license = "MIT",
     packages = ["espact"],
     scripts = ["scripts/espact"],
-    install_requires = ["Jinja2", "PyYAML"])
+    install_requires = ["Jinja2", "PyYAML"],
+    package_data = { "espact": ["templates/*.sh"] })

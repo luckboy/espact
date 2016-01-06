@@ -1,5 +1,5 @@
 {#-
- # Copyright (c) 2015 Łukasz Szpakowski
+ # Copyright (c) 2015-2016 Łukasz Szpakowski
  #
  # Permission is hereby granted, free of charge, to any person obtaining a copy
  # of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@
     {%- if not find_root_dir and toolchain_dir -%}
     {%- set find_root_dir = toolchain_dir -%}
     {%- endif -%}
-    {% if host -%}
+    {%- if host -%}
     (
     {%- if not find_root_dir %}
         cc_path="`which '{{cc|shsqe}} '`"
@@ -103,14 +103,14 @@
         echo 'set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
         echo 'set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
     ) && \
-    {%- endif -%}
-    {%- if build_dir != "." %}
+    {% endif -%}
+    {%- if build_dir != "." -%}
     mkdir -p '{{build_dir|shsqe}}' && \
     cd '{{build_dir|shsqe}}' && \
-    {%- endif -%}
-    {%- for name in env %}
+    {% endif -%}
+    {% for name in env -%}
     {{name}}='{{env[name]|shsqe}}' \
-    {%- endfor %}
+    {% endfor -%}
     '{{cmake_prog|shsqe}}'
     {%- if host -%}
     {%- if tmp_dir.startswith("/") %} \

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (c) 2015 Łukasz Szpakowski
+# Copyright (c) 2015-2016 Łukasz Szpakowski
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -268,9 +268,10 @@ class PackageCollection:
 
     def load_package_rule_dict_data(self, path, *args, **kwargs):
         try:
-            return self._load_yaml_template_file("packages/" + path + ".rules.yml", *args, **kwargs)
-        except jinja2.TemplateNotFound:
-            return self._load_yaml_template_string("{% extends \"templates/default.rules.yml\" %}", *args, **kwargs)
+            try:
+                return self._load_yaml_template_file("packages/" + path + ".rules.yml", *args, **kwargs)
+            except jinja2.TemplateNotFound:
+                return self._load_yaml_template_string("{% extends \"templates/default.rules.yml\" %}", *args, **kwargs)
         except (jinja2.TemplateError, yaml.YAMLError, IOError) as e:
             raise exception_to_package_exception(e, path)
 

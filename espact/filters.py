@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (c) 2015 Łukasz Szpakowski
+# Copyright (c) 2015-2016 Łukasz Szpakowski
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@
 
 default_filters = {}
 
-def ymlqe(value):
+def ymlqe(string):
     new_string = ""
     for c in string:
         if c == '\a':

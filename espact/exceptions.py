@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (c) 2015 Łukasz Szpakowski
+# Copyright (c) 2015-2016 Łukasz Szpakowski
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -91,7 +91,7 @@ class TemplateException(EspactException):
 
 def exception_to_package_exception(exception, path):
     if isinstance(exception, jinja2.TemplateNotFound):
-        return PackageException(path, "no template " + name)
+        return PackageException(path, "no template " + exception.name)
     elif isinstance(exception, jinja2.TemplateSyntaxError):
         message = "template syntax error: "
         if exception.filename != None:
