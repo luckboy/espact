@@ -24,7 +24,7 @@ source package collection, you can build all packages by invoke the following co
     espact
 
 If you are in other directory, you can pass the `-d` option with a directory of a source
-package collection to build all packages from other directory. If you want build single
+package collection to build all packages from other directory. If you want to build single
 packages, you can invoke the following command:
 
     espact [-d <directory of source package collection>] <package> ...
@@ -157,6 +157,7 @@ following list:
 * `re` - `re` module
 * `match` - `match` function from `re` module
 * `sub` - `sub` function from `re` module
+* `package` - package path
 * `package_collection_dir` - directory of source package collection
 * `work_dir` - work directory
 * `vars` - variables which are defined by the `-D` option
@@ -202,13 +203,14 @@ environment variables. These functions also can take the following arguments:
     * `indentfirst` - indents lines with first line if this argument is true (by default, first
        line isn't indented)
 * Arguments for configuration functions:
-    * `prefix` - installation prefix (by default, installation prefix is `/usr`)
+    * `prefix` - installation prefix
     * `build` - build machine (only for `configure_for_autoconf`)
     * `host` - host machine
     * `target` - target machine (only for `configure_for_autoconf`)
     * `build_dir` - building directory
     * `toolchain_dir` - toolchain directory
     * `find_root_dir` - search directory (only for `configure_for_cmake`)
+    * `tmp_dir` - temporary directory (only for `configure_for_cmake`)
     * `ar` - ar program
     * `arflags` - flags for ar program (only for `configure_for_autoconf`)
     * `ranlib` - ranlib program
