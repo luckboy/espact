@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (c) 2015 Łukasz Szpakowski
+# Copyright (c) 2015-2016 Łukasz Szpakowski
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,6 +19,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import os
+from os import sep
+from os.path import isfile, join
 import platform
 import re
 import jinja2
@@ -118,3 +121,42 @@ def bsd_make(args = [], env = {}, **other_fun_args):
     return _render_template("bsd_make.sh", args = args, env = env, **other_fun_args)
 
 default_functions["bsd_make"] = bsd_make
+
+def packages(package_collection_dir, category = None):
+    package_tree_dir = join(package_collection_dir, "packages")
+    if category != None:
+        package_dir = join(package_tree_dir, category.replace("/", sep))
+    else:
+        package_dir = package_tree_dir
+    package_paths = set([])
+    for dir, dirs, files in os.walk(package_dir):
+        for file in files:
+            tmp_file = join(dir, file)
+            if tmp_file.endswith(".info.yml"):
+                if isfile(tmp_file):
+                    if tmp_file.startswith(package_tree_dir):
+                        tmp_path = tmp_file[len(package_tree_dir):-9]
+                        if len(tmp_path) >= 1:
+                            if tmp_path[0] == sep:
+                                tmp_path = tmp_path[1:]
+                        package_paths.add(tmp_path.replace(sep, "/"))
+    return package_paths
+
+default_functions["packages"] = packages
+
+def listdir(path):
+    return os.listdir(path.replace("/", sep))
+
+default_functions["listdir"] = listdir
+
+def walk(top, topdown = True, onerror = None, followlinks = False):
+    if re.match("^(2\\.[6-9](\\..+|)|[3-9](\\..+|)|[1-9][0-9](\\..+|))$", platform.python_version()):
+        tuples = os.walk(top.replace("/", sep), topdown, onerror, followlinks)
+    else:
+        tuples = os.walk(top.replace("/", sep), topdown, onerror)
+    new_tuples = []
+    for dir, dirs, files in tuples:
+        new_tuples.append((dir.replace(sep, "/"), dirs, files))
+    return new_tuples
+
+default_functions["walk"] = walk

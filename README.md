@@ -194,6 +194,10 @@ presented in the following list:
 * `make(args, env, **other_fun_args)` - make program 
 * `gnu_make(args, env, **other_fun_args)` - GNU make program
 * `bsd_make(args, env, **other_fun_args)` - BSD make program
+* `packages(package_collection_dir, category)` - package paths
+* `listdir(path)` - `listdir` function from `os` module for Unix-style paths
+* `walk(top, topdown = True, onerror = None, followlinks = False)` - `walk` function from `os`
+  module for Unix-style paths
 
 The `args` argument is a list of command arguments. The `env` argument is a dictionary of
 environment variables. These functions also can take the following arguments:
