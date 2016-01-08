@@ -213,6 +213,14 @@ environment variables. These functions also can take the following arguments:
     * `build` - build machine (only for `configure_for_autoconf`)
     * `host` - host machine
     * `target` - target machine (only for `configure_for_autoconf`)
+    * `enable_multilib` - multilib is enabled if value is  true (only for
+      `configure_for_autoconf`)
+    * `disable_multilib` - multilib is disabled if value is true (only for
+      `configure_for_autoconf`)
+    * `enable_nls` - Native Language Support is enabled if value is true (only for
+      `configure_for_autoconf`)
+    * `disable_nls` - Native Language Support is disabled if value is true (only for
+      `configure_for_autoconf`)
     * `build_dir` - building directory
     * `toolchain_dir` - toolchain directory
     * `find_root_dir` - search directory (only for `configure_for_cmake`)

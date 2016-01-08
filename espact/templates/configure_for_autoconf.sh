@@ -1,5 +1,5 @@
 {#-
- # Copyright (c) 2015 Łukasz Szpakowski
+ # Copyright (c) 2015-2016 Łukasz Szpakowski
  #
  # Permission is hereby granted, free of charge, to any person obtaining a copy
  # of this software and associated documentation files (the "Software"), to deal
@@ -118,6 +118,18 @@
     {%- endif -%}
     {%- if target %} \
         --target='{{target|shsqe}}'
+    {%- endif -%}
+    {%- if enable_multilib %} \
+        --enable-multilib
+    {%- endif -%}
+    {%- if disbale_multilib %} \
+        --disable-multilib
+    {%- endif -%}
+    {%- if enable_nls %} \
+        --enable-nls
+    {%- endif -%}
+    {%- if disbale_nls %} \
+        --disable-nls
     {%- endif -%}
     {%- for arg in args %} \
         '{{arg|shsqe}}'
