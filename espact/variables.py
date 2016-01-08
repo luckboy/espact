@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (c) 2015 Łukasz Szpakowski
+# Copyright (c) 2015-2016 Łukasz Szpakowski
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -34,4 +34,7 @@ default_variables = {
     "re": re,
     "match": re.match,
     "sub": re.sub,
+
+    "reversed": reversed,
+    "sorted": sorted
 }

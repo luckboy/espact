@@ -157,6 +157,8 @@ following list:
 * `re` - `re` module
 * `match` - `match` function from `re` module
 * `sub` - `sub` function from `re` module
+* `reversed` - `reversed` function
+* `sorted` - `sorted` function
 * `package` - package path
 * `package_collection_dir` - directory of source package collection
 * `work_dir` - work directory
