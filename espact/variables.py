@@ -35,6 +35,14 @@ default_variables = {
     "match": re.match,
     "sub": re.sub,
 
+    "dict": dict,
+    "float": float,
+    "int": int,
+    "len": len,
+    "list": list,
+    "repr": repr,
     "reversed": reversed,
-    "sorted": sorted
+    "set": set,
+    "sorted": sorted,
+    "str": str
 }

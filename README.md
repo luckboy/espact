@@ -157,8 +157,16 @@ following list:
 * `re` - `re` module
 * `match` - `match` function from `re` module
 * `sub` - `sub` function from `re` module
+* `dict` - `dict` function
+* `float` - `float` function
+* `int` - `int` function
+* `len` - `len` function
+* `list` - `list` function
 * `reversed` - `reversed` function
+* `repr` - `repr` function
+* `set` - `set` function
 * `sorted` - `sorted` function
+* `str` - `str` function
 * `package` - package path
 * `package_collection_dir` - directory of source package collection
 * `work_dir` - work directory
