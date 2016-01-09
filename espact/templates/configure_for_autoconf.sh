@@ -122,13 +122,13 @@
     {%- if enable_multilib %} \
         --enable-multilib
     {%- endif -%}
-    {%- if disbale_multilib %} \
+    {%- if disable_multilib %} \
         --disable-multilib
     {%- endif -%}
     {%- if enable_nls %} \
         --enable-nls
     {%- endif -%}
-    {%- if disbale_nls %} \
+    {%- if disable_nls %} \
         --disable-nls
     {%- endif -%}
     {%- for arg in args %} \
