@@ -229,6 +229,14 @@ environment variables. These functions also can take the following arguments:
       `configure_for_autoconf`)
     * `disable_nls` - Native Language Support is disabled if value is true (only for
       `configure_for_autoconf`)
+    * `enable_shared` - building of shared libraries is enabled if value is true (only for
+      `configure_for_autoconf`)
+    * `disable_shared` - building of shared libraries is disabled if value is true (only for
+      `configure_for_autoconf`)
+    * `enable_static` - building of static libraries is enabled if value is true (only for
+      `configure_for_autoconf`)
+    * `disable_static` - building of static libraries is disabled if value is true (only for
+      `configure_for_autoconf`)
     * `build_dir` - building directory
     * `toolchain_dir` - toolchain directory
     * `find_root_dir` - search directory (only for `configure_for_cmake`)

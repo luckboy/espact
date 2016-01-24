@@ -131,6 +131,18 @@
     {%- if disable_nls %} \
         --disable-nls
     {%- endif -%}
+    {%- if enable_shared %} \
+        --enable-shared
+    {%- endif -%}
+    {%- if disable_shared %} \
+        --disable-shared
+    {%- endif -%}
+    {%- if enable_static %} \
+        --enable-static
+    {%- endif -%}
+    {%- if disable_static %} \
+        --disable-static
+    {%- endif -%}
     {%- for arg in args %} \
         '{{arg|shsqe}}'
     {%- endfor -%}
