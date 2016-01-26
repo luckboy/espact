@@ -57,9 +57,11 @@ def _render_template(file, *args, **kwargs):
 
 def _enter_to_build_dir_for_default_build_dir(default_build_dir, **fun_args):
     build_dir = fun_args.get("build_dir", default_build_dir)
-    string = "espact_saved_cwd=\"`pwd`\" && \\\n"
-    string += "mkdir -p '" + shsqe(build_dir) + "' && \\\n"
-    string += "cd '" + shsqe(build_dir) + "'"
+    string = "{\n"
+    string += "    espact_saved_cwd=\"`pwd`\"\n"
+    string += "    mkdir -p '" + shsqe(build_dir) + "' && \\\n"
+    string += "    cd '" + shsqe(build_dir) + "'\n"
+    string += "}"
     return _indent(string, fun_args.get("indent", 4), fun_args.get("indentfirst", False))
 
 def configure(env = {}, **other_fun_args):
