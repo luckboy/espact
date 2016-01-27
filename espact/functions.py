@@ -24,9 +24,12 @@ from os import sep
 from os.path import isfile, join
 import platform
 import re
+import threading
 import jinja2
 from espact.filters import default_filters, shsqe
 from espact.variables import default_variables
+
+_env = threading.local()
 
 default_functions = {}
 
@@ -42,11 +45,13 @@ def _indent(string, width, indentfirst):
     return "\n".join(new_lines)
 
 def _render_template(file, *args, **kwargs):
-    env = jinja2.Environment(loader = jinja2.PackageLoader("espact", "templates"))
-    env.globals.update(default_variables)
-    env.globals.update(default_functions)
-    env.filters.update(default_filters)
-    template = env.get_template(file)
+    global _env
+    if not hasattr(_env, "env"):
+        _env.env = jinja2.Environment(loader = jinja2.PackageLoader("espact", "templates"))
+        _env.env.globals.update(default_variables)
+        _env.env.globals.update(default_functions)
+        _env.env.filters.update(default_filters)
+    template = _env.env.get_template(file)
     new_kwargs = {}
     new_kwargs.update(kwargs)
     new_kwargs["indent"] = 0
