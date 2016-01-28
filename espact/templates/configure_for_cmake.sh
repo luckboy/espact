@@ -39,7 +39,9 @@
         cc_path="`which '{{cc|shsqe}} '`"
         bin_path="`dirname "$cc_path"`"
         find_root_path="`dirname "$bin_path"`"
-        escaped_find_root_path="`echo "$find_root_path" | awk -v ORS='\\n' '{ gsub(/[\"$()@\\^]/, "\\\\&"); gsub(/\t/, "\\t"); gsub(/\r/, "\\r");  print; }'`"
+        awk_ors='\\n'
+        awk_script='{ gsub(/[\"$()@\\^]/, "\\\\&"); gsub(/\t/, "\\t"); gsub(/\r/, "\\r"); print; }'
+        escaped_find_root_path="`printf '%s' "$find_root_path" | awk -v ORS="$awk_ors" "$awk_script"`"
     {%- endif %}
     {%- set is_found = False -%}
     {%- for host_system_pattern, system_name in [
