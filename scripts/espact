@@ -214,7 +214,8 @@ elif command == "made_targets":
                 target = espact.make_target(package_path, target_name)
                 if package_collection.has_made_target(target):
                     made_targets.append(target)
-            stdout.write(yaml.dump(made_targets, default_flow_style = False, default_style = ""))
+            if len(made_targets) > 0:
+                stdout.write(yaml.dump(made_targets, default_flow_style = False, default_style = ""))
         except espact.EspactException as e:
             stderr.write("error: " + str(e) + "\n")
             status = 1
@@ -223,7 +224,8 @@ elif command == "targets":
         try:
             package = package_collection.get_package(package_path)
             targets = sorted(map(lambda target_name: espact.make_target(package_path, target_name), package.rules.keys()))
-            stdout.write(yaml.dump(targets, default_flow_style = False, default_style = ""))
+            if len(targets) > 0:
+                stdout.write(yaml.dump(targets, default_flow_style = False, default_style = ""))
         except espact.EspactException as e:
             stderr.write("error: " + str(e) + "\n")
             status = 1
@@ -241,12 +243,13 @@ elif command == "unmaking_targets":
     for package_path in package_paths:
         try:
             package = package_collection.get_package(package_path)
-            made_targets = []
+            unmaking_targets = []
             for target_name in sorted(package.rules.keys()):
                 target = espact.make_target(package_path, target_name)
                 if package_collection.has_unmaking_target(target):
-                    made_targets.append(target)
-            stdout.write(yaml.dump(made_targets, default_flow_style = False, default_style = ""))
+                    unmaking_targets.append(target)
+            if len(unmaking_targets) > 0:
+                stdout.write(yaml.dump(unmaking_targets, default_flow_style = False, default_style = ""))
         except espact.EspactException as e:
             stderr.write("error: " + str(e) + "\n")
             status = 1
