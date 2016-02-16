@@ -259,6 +259,11 @@ environment variables. These functions also can take the following arguments:
     * `cxxflags` - flags for C++ compiler
     * `fc` - Fortran compiler
     * `fflags` - flags for Fortran compiler
+    * `pkg_config` pkg-config program
+    * `pkg_config_path` - PKG_CONFIG_PATH environment variable (only for
+      `configure_for_autoconf`)
+    * `pkg_config_libdir` - PKG_CONFIG_LIBDIR environment variable (only for
+      `configure_for_autoconf`)
     * `build_cc` - C compiler for build machine (only for `configure_for_autoconf`)
     * `autoconf_prog` - autoconf program (only for `configure_for_autoconf`)
     * `cmake_prog` - cmake program (only for `configure_for_cmake`)
