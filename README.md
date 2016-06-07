@@ -212,7 +212,7 @@ presented in the following list:
 The `args` argument is a list of command arguments. The `env` argument is a dictionary of
 environment variables. These functions also can take the following arguments:
 
-* Arguments for all functions:
+* Arguments for all functions except the three last functions:
     * `indent` - indentation width (by default, indentation width is 4)
     * `indentfirst` - indents lines with first line if this argument is true (by default, first
        line isn't indented)
