@@ -94,7 +94,7 @@
     {%- endfor %}
         echo 'set(CMAKE_C_COMPILER "{{cc|cmqe|shsqe}}")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
         echo 'set(CMAKE_CXX_COMPILER "{{cxx|cmqe|shsqe}}")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
-        echo 'set(CMAKE_FORTRAN_COMPILER "{{fc|cmqe|shsqe}}")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
+        echo 'set(CMAKE_Fortran_COMPILER "{{fc|cmqe|shsqe}}")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
     {%- if toolchain_dir %}
         echo 'set(CMAKE_FIND_ROOT_PATH "{{find_root_dir|cmqe|shsqe}}")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
     {%- else %}
@@ -156,10 +156,10 @@
         -DCMAKRE_CXX_FLAGS='{{cxxflags|shsqe}}'
     {%- endif -%}
     {%- if (not host) and fc %} \
-        -DCMAKE_FORTRAN_COMPILER='{{fc|shsqe}}'
+        -DCMAKE_Fortran_COMPILER='{{fc|shsqe}}'
     {%- endif -%}
     {%- if fflags %} \
-        -DCMAKRE_FORTRAN_FLAGS='{{fflags|shsqe}}'
+        -DCMAKRE_Fortran_FLAGS='{{fflags|shsqe}}'
     {%- endif -%}
     {%- if pkg_config %} \
         -DPKG_CONFIG_EXECUTABLE='{{pkg_config|shsqe}}'
