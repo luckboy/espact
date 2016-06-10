@@ -217,6 +217,7 @@ environment variables. These functions also can take the following arguments:
     * `indentfirst` - indents lines with first line if this argument is true (by default, first
        line isn't indented)
 * Arguments for configuration functions:
+    * `build_type` - build type (only for `configure_for_cmake`)
     * `prefix` - installation prefix
     * `build` - build machine (only for `configure_for_autoconf`)
     * `host` - host machine
