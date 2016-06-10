@@ -43,6 +43,7 @@
         awk_script='{ gsub(/[\"$()@\\^]/, "\\\\&"); gsub(/\t/, "\\t"); gsub(/\r/, "\\r"); print; }'
         escaped_find_root_path="`printf '%s' "$find_root_path" | awk -v ORS="$awk_ors" "$awk_script"`"
     {%- endif %}
+        mkdir -p '{{tmp_dir|shsqe}}'
     {%- set is_found = False -%}
     {%- for host_system_pattern, system_name in [
         ("linux(-[^-]*|)", "Linux"),
@@ -87,12 +88,10 @@
         {%- set is_found = True -%}
     {%- endif -%}
     {%- else %}
-        echo -n > '{{toolchain_file|shsqe}}'
+        echo -n > '{{tmp_dir|shsqe}}/Toolchain.cmake'
     {%- endif -%}
     {%- endif -%}
     {%- endfor %}
-        echo 'set(CMAKE_AR "{{ar|cmqe|shsqe}}")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
-        echo 'set(CMAKE_RANLIB "{{ranlib|cmqe|shsqe}}")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
         echo 'set(CMAKE_C_COMPILER "{{cc|cmqe|shsqe}}")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
         echo 'set(CMAKE_CXX_COMPILER "{{cxx|cmqe|shsqe}}")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
         echo 'set(CMAKE_FORTRAN_COMPILER "{{fc|cmqe|shsqe}}")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
