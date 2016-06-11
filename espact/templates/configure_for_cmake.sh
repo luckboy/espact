@@ -122,8 +122,6 @@
     {%- endif -%}
     {%- if build_type %} \
         -DCMAKE_BUILD_TYPE='{{build_type|shsqe}}'
-    {%- else %} \
-        -DCMAKE_BUILD_TYPE=Release
     {%- endif -%}
     {%- if prefix %} \
         -DCMAKE_INSTALL_PREFIX='{{prefix|shsqe}}'
