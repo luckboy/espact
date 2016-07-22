@@ -98,7 +98,7 @@
     {%- if toolchain_dir %}
         echo 'set(CMAKE_FIND_ROOT_PATH "{{find_root_dir|cmqe|shsqe}}")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
     {%- else %}
-        echo 'set(CMAKE_FIND_ROOT_PATH "'"$escapted_find_root_path"'")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
+        echo 'set(CMAKE_FIND_ROOT_PATH "'"$escaped_find_root_path"'")' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
     {%- endif %}
         echo 'set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
         echo 'set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)' >> '{{tmp_dir|shsqe}}/Toolchain.cmake'
