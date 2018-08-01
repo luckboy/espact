@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (c) 2015 Łukasz Szpakowski
+# Copyright (c) 2015, 2018 Łukasz Szpakowski
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -102,9 +102,10 @@ class Maker:
             else:
                 status = 0
             if status == 0:
-                for target_to_unmake in targets_to_unmake:
-                    if self.package_collection.has_made_target(target_to_unmake):
-                        self.package_collection.remove_made_target(target_to_unmake)
+                if not self.is_fake:
+                    for target_to_unmake in targets_to_unmake:
+                        if self.package_collection.has_made_target(target_to_unmake):
+                            self.package_collection.remove_made_target(target_to_unmake)
                 if self.can_add_made_target and (not self._graph.vertex(vertex_key).package.rules[vertex_key.name].phony):
                     self.package_collection.add_made_target(vertex_key, self.can_create_made_target_file)
             else:
