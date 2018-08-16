@@ -94,10 +94,10 @@ class Maker:
         if must_make:
             self.pre_make_fun(vertex_key, False)
             targets_to_unmake = self._get_targets_to_unmake(vertex_key)
-            for target_to_unmake in targets_to_unmake:
-                if self.package_collection.has_made_target(target_to_unmake):
-                    self.package_collection.add_made_target(target_to_unmake, self.can_create_made_target_file, True)
             if not self.is_fake:
+                for target_to_unmake in targets_to_unmake:
+                    if self.package_collection.has_made_target(target_to_unmake):
+                        self.package_collection.add_made_target(target_to_unmake, self.can_create_made_target_file, True)
                 status = self.package_collection.execute_rule_command(vertex_key)
             else:
                 status = 0
