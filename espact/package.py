@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (c) 2015-2016 Łukasz Szpakowski
+# Copyright (c) 2015-2016, 2018 Łukasz Szpakowski
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -298,7 +298,7 @@ class PackageCollection:
 
     def add_made_target(self, target, can_create_file = True, is_unmaking = False):
         if not is_unmaking:
-            current_time = datetime.now()
+            current_time = datetime.utcnow()
             self._made_target_time_cache[target] = current_time
         else:
             self._made_target_time_cache[target] = "unmaking"
