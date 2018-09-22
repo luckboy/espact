@@ -126,8 +126,9 @@ The rule associative array can have the following keys with values:
 
 A target in an YAML list can be represented by a list. The first element of this list is a
 package path and the second element of this list is the target name. If the list has one
-element, the target name is `build`. The target can be presented by a text if the rule of this
-target and a rule with this list are in same package. This text is name of this target.
+element, the target name is the target name of the rule. The target can be presented by a text
+if the rule of this target and a rule with this list are in same package. This text is name of
+this target.
 
 Shell commands are executed in the work directory. All results of execution of rules should be
 in this directory. This directory will contain the `targets` with files of made targets after
